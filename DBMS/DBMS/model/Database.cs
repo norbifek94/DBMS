@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DBMS.backend
+namespace DBMS.model
 {
-    class Table
+    class Database
     {
-        private String name;
-
-
     }
 }
