@@ -250,9 +250,3 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-
-*/App.config
-*/DBMS.csproj
-*/Properties/Resources.Designer.cs
-*/Properties/Settings.Designer.cs
-
