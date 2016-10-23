@@ -251,8 +251,8 @@ paket-files/
 .idea/
 *.sln.iml
 
-App.config
-DBMS.csproj
-Properties/Resources.Designer.cs
-Properties/Settings.Designer.cs
+DBMS/App.config
+DBMS/DBMS.csproj
+DBMS/Properties/Resources.Designer.cs
+DBMS/Properties/Settings.Designer.cs
 
