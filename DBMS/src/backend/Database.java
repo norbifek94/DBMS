@@ -39,7 +39,7 @@ public class Database {
 	}
 	
 	//XML file letrehozas ha meg nem letezik es a fo Node letrehozasa (Databases)
-	public void createXMLFile(){
+	public void createXMLFile() {
 
 		try {
 			
@@ -57,6 +57,8 @@ public class Database {
 	        if(!file.exists()){
 	        	transformer.transform(new DOMSource(doc), 
                                  new StreamResult(new FileOutputStream(file, true)));
+	        }else{
+	        	throw new DBAlreadyExists("Database is already existing with this name");
 	        }
         } catch (TransformerException | IOException e) {
             System.out.println(e.getMessage());
