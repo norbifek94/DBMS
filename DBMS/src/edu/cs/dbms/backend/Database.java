@@ -140,7 +140,7 @@ public class Database {
 	}
 	
 	//tabla letrehozasa
-	public void creatTable(String databaseName, String tableName, String fileName)
+	public void createTable(String databaseName, String tableName, String fileName)
 								throws DatabaseException{
 		
 		try {
@@ -164,14 +164,14 @@ public class Database {
 			    //a megadott nevu adatbazishoz hozzaadom a tablat
 			    if(key.equals(databaseName)){
 			    	if(!searchTable(currentItem, tableName)){
-				    	Element tableElement = doc.createElement(Config.TABLE_ID);
+				    	Element tableElement = doc.createElement(Config.TABLE_TAG);
 				    	Element struc = doc.createElement(Config.STRUCTURE_TAG);
 						Element primaryKey = doc.createElement(Config.PRIMARY_KEY_TAG);
-						Element uniqueKey = doc.createElement(Config.PRIMARY_KEY_TAG);
+						Element uniqueKey = doc.createElement(Config.UNIQUE_KEY_TAG);
 						Element indexFiles = doc.createElement(Config.INDEX_FILES_TAG);
 						
 						tableElement.setAttribute(Config.TABLE_ID, tableName);
-						tableElement.setAttribute("fileName", fileName);
+						tableElement.setAttribute(Config.TABLE_FILE_NAME, fileName);
 						tableElement.appendChild(struc);
 						tableElement.appendChild(primaryKey);
 						tableElement.appendChild(uniqueKey);
@@ -297,7 +297,7 @@ public class Database {
 	}
 
 	//attributum letehozasa
-	public void creatAttribute(Attribute attribute) throws DatabaseException{
+	public void createAttribute(Attribute attribute) throws DatabaseException{
 		
 		try {
 			boolean saved = false;
@@ -322,12 +322,12 @@ public class Database {
 			    	//tablat keresem
 					for (int j = 0; j < nlTable.getLength(); j++){
 					    Node currentTable = nlTable.item(j);
-					    
+					    System.out.println(currentTable.getNodeName());
 					    //az indentalast is node-nak veszi ezert ellenorzom h tabla - e
 					    if(currentTable.getNodeName() == Config.TABLE_TAG){
 					    	String keyTable = currentTable.getAttributes()
 						    		.getNamedItem(Config.TABLE_ID).getNodeValue();
-						
+					    	
 						    if(keyTable.equals(attribute.getTableName())){
 						    	NodeList nl = currentTable.getChildNodes();
 						    	

@@ -15,6 +15,7 @@ public class Config {
 	public static final String TABLE_SEARCH = "//Databases/Database/Table[@tableName]";
 	public static final String TABLE_TAG = "Table";
 	public static final String TABLE_ID = "tableName";
+	public static final String TABLE_FILE_NAME = "fileName";
 	
 	//IndexFile
 	public static final String INDEX_FILES_TAG = "IndexFiles";
