@@ -1,4 +1,4 @@
-package edu.cs.dbms.backend;
+package edu.cs.dbms.backend.model;
 
 public class Attribute {
 	private String databaseName;
@@ -24,6 +24,38 @@ public class Attribute {
 		this.unique = unique;
 	}
 	
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public void setAttrName(String attrName) {
+		this.attrName = attrName;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public void setLength(String length) {
+		this.length = length;
+	}
+
+	public void setIsNull(String isNull) {
+		this.isNull = isNull;
+	}
+
+	public void setPrimary(boolean primary) {
+		this.primary = primary;
+	}
+
+	public void setUnique(boolean unique) {
+		this.unique = unique;
+	}
+
 	public String getDatabaseName() {
 		return databaseName;
 	}

@@ -1,4 +1,4 @@
-package edu.cs.dbms.backend;
+package edu.cs.dbms.backend.service;
 
 public class DatabaseException extends RuntimeException{
 

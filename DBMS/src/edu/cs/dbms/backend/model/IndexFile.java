@@ -1,4 +1,4 @@
-package edu.cs.dbms.backend;
+package edu.cs.dbms.backend.model;
 
 public class IndexFile {
 	
@@ -19,6 +19,36 @@ public class IndexFile {
 		this.tableName = tableName;
 	}
 	
+
+	public void setIndexName(String indexName) {
+		this.indexName = indexName;
+	}
+
+
+	public void setKeyLength(String keyLength) {
+		this.keyLength = keyLength;
+	}
+
+
+	public void setUnique(String unique) {
+		this.unique = unique;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
 
 	public String getIndexName() {
 		return indexName;
