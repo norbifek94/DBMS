@@ -75,7 +75,7 @@ public class AttributeService extends XMLFileService{
 		return false;
 	}
 	
-	public List<String> getAttribute(Attribute attribute){
+	public List<String> getAttributeNames(Attribute attribute){
 		List<String> attributeList = new ArrayList<String>();
 		Document doc = getDocument();
 		Element root = doc.getRootElement();
@@ -194,7 +194,108 @@ public class AttributeService extends XMLFileService{
 		return false;
 	}
 	
+	public boolean isForeignKey(Attribute attribute){
+		if(!isPrimaryKey(attribute)){
+			return false;
+		}
+		
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			List<Element> listTable = e.getChildren();
+			for(Element t : listTable){
+				Element fk = t.getChild(Config.FOREIGN_KEYS_TAG);
+				List<Element> fkList = fk.getChildren();
+				for(Element f : fkList){
+					Element ref = f.getChild(Config.FOREIGN_KEY_REFERENCES_TAG);
+					Element refTable = ref.getChild(Config.FOREIGN_KEY_REF_TABLE_TAG);
+					if(refTable.getText().equals(attribute.getTableName())){
+						List<Element> refAttList = ref.getChildren(Config.FOREIGN_KEY_REF_ATTRIBUTE_TAG);
+						for(Element refAtt : refAttList){
+							if(refAtt.getText().equals(attribute.getAttrName())){
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	public boolean isUnique(Attribute attribute){
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(attribute.getDatabaseName())){
+				
+				List<Element> listTable = e.getChildren();
+				for(Element t : listTable){
+					
+					if(t.getAttributeValue(Config.TABLE_ID).equals(attribute.getTableName())){
+						
+						Element pk = t.getChild(Config.UNIQUE_KEY_TAG);	
+						List<Element> pkList = pk.getChildren();
+						
+						for(Element p : pkList){
+							if(p.getValue().equals(attribute.getAttrName())){
+								return true;
+							}
+						}
+						
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	public boolean isPk(){
 		return isPK;
+	}
+	
+	public List<Attribute> getAttribute(Attribute attribute){
+		List<Attribute> attributeList = new ArrayList<Attribute>();
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(attribute.getDatabaseName())){
+				
+				List<Element> listTable = e.getChildren();
+				for(Element t : listTable){
+					
+					if(t.getAttributeValue(Config.TABLE_ID).equals(attribute.getTableName())){
+						Element struc = t.getChild(Config.STRUCTURE_TAG);
+						List<Element> attr = struc.getChildren();
+						for(Element a : attr){
+							attribute.setAttrName(a.getAttributeValue(Config.ATTRIBUTE_ID));
+							Attribute newAttr = new Attribute.AttributeBuilder()
+															 .setAttrName(a.getAttributeValue(Config.ATTRIBUTE_ID))
+															 .setType(a.getAttributeValue(Config.ATTRIBUTE_TYPE))
+															 .setLength(a.getAttributeValue(Config.ATTRIBUTE_LENGTH))
+															 .setIsNull(a.getAttributeValue(Config.ATTRIBUTE_IS_NULL))
+															 .setDatabaseName(attribute.getDatabaseName())
+															 .setTableName(attribute.getTableName())
+															 .setPrimary(isPrimaryKey(attribute))
+															 .setForeign(isForeignKey(attribute))
+															 .setUnique(isUnique(attribute))
+															 .creatAttr();
+							attributeList.add(newAttr);
+						}
+					}
+				}
+			}
+		}
+		return attributeList;
 	}
 }
