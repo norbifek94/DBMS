@@ -22,6 +22,7 @@ import edu.cs.dbms.backend.service.TableService;
 import edu.cs.dbms.frontend.gui.AttributePanel;
 import edu.cs.dbms.frontend.gui.DatabasePanel;
 import edu.cs.dbms.frontend.gui.DbmsFrame;
+import edu.cs.dbms.frontend.gui.NewEntryPanel;
 import edu.cs.dbms.frontend.gui.ForeignKeyPanel;
 import edu.cs.dbms.frontend.gui.IndexAttributePanel;
 import edu.cs.dbms.frontend.gui.IndexFilePanel;
@@ -118,6 +119,11 @@ public class PopupMenuListener implements MouseListener{
 					break;
 				case ConfigFront.NEW_ATTRIBUTE:
 					panel = new AttributePanel(treeViewPanel, treePopup);
+					dbmsFrame.add(panel, BorderLayout.CENTER);
+					dbmsFrame.pack();
+					break;
+				case ConfigFront.NEW_ENTRY:
+					panel = new NewEntryPanel();
 					dbmsFrame.add(panel, BorderLayout.CENTER);
 					dbmsFrame.pack();
 					break;

@@ -114,6 +114,7 @@ public class TreeViewListener implements MouseListener{
 					case 5:
 						
 						popupMenu.addNewMenuItem(ConfigFront.NEW_ATTRIBUTE);
+						popupMenu.addNewMenuItem(ConfigFront.NEW_ENTRY);
 						
 						node = (DefaultMutableTreeNode) array[depth-1];
 						attribute = new Attribute.AttributeBuilder()

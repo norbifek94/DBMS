@@ -12,13 +12,5 @@
       <foreignKeys />
       <IndexFiles />
     </Table>
-    <Table tableName="table2" fileName="table2.bin">
-      <Structure />
-      <primaryKey />
-      <uniqueKey />
-      <foreignKeys />
-      <IndexFiles />
-    </Table>
   </Database>
-  <Database databaseName="test2" />
 </Databases>
