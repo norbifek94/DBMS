@@ -124,7 +124,7 @@ public class PopupMenuListener implements MouseListener{
 					dbmsFrame.pack();
 					break;
 				case ConfigFront.NEW_ENTRY:
-					panel = new NewEntryPanel();
+					panel = new NewEntryPanel(treeViewPanel, treePopup);
 					dbmsFrame.add(panel, BorderLayout.CENTER);
 					dbmsFrame.pack();
 					break;

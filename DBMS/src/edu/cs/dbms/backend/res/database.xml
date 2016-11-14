@@ -3,10 +3,11 @@
   <Database databaseName="test">
     <Table tableName="table" fileName="table.bin">
       <Structure>
-        <Attribute attributeName="das" type="char" length="1" isNull="0" />
+        <Attribute attributeName="id" type="char" length="1" isNull="0" />
+        <Attribute attributeName="name" type="char" length="1" isNull="0" />
       </Structure>
       <primaryKey>
-        <pkAttribute>das</pkAttribute>
+        <pkAttribute>id</pkAttribute>
       </primaryKey>
       <uniqueKey />
       <foreignKeys />
