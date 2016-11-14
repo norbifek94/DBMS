@@ -38,7 +38,7 @@ public class PopupMenuListener implements MouseListener{
 	private TreePopup treePopup;
 	private DatabaseService databaseService;
 	private TableService tableService;
-	
+	private JPanel panel;
 	
 	public PopupMenuListener(DbmsFrame dbmsFrame, TreeViewPanel treeViewPanel,
 							TreePopup treePopup, JMenuItem menuItem) {
@@ -48,6 +48,7 @@ public class PopupMenuListener implements MouseListener{
 		this.treePopup = treePopup;
 		this.databaseService = new DatabaseService();
 		this.tableService = new TableService();
+		this.panel = null;
 	}
 	
 	@Override
@@ -78,11 +79,11 @@ public class PopupMenuListener implements MouseListener{
 		DefaultMutableTreeNode node;
 		Attribute attr;
 		IndexFile indexFile;
-		JPanel panel = null;
+		
 		AttributeService attributeService = new AttributeService();
 		IndexFileService indexFileService = new IndexFileService();
 		ForeignKeyService foreignKeyService = new ForeignKeyService();
-		
+				
 		if(SwingUtilities.isLeftMouseButton(e)){
 			switch(menuItem.getText()){
 				case ConfigFront.NEW_DATABASE:	
@@ -165,6 +166,12 @@ public class PopupMenuListener implements MouseListener{
 					treeViewPanel.loadTableContent(node);
 					break;
 			}
+		}
+	}
+	
+	public void setVisiblePanel(){
+		if(panel != null){
+			panel.setVisible(false);
 		}
 	}
 }

@@ -98,12 +98,14 @@ public class TreeViewPanel extends JPanel {
 		AttributeService attributeService = new AttributeService();
 		IndexFileService indexFileService = new IndexFileService();
 		ForeignKeyService foreignKeyService = new ForeignKeyService();
-		List<String> attrList = attributeService.getAttribute(attribute);		
+		List<String> attrList = attributeService.getAttributeNames(attribute);	
+		
 		for(String attrName : attrList){
 			
 			DefaultMutableTreeNode attrNode = new DefaultMutableTreeNode(attrName);
 			columns.add(attrNode);
 		}
+		
 		List<String> fkTablesList = foreignKeyService.getForeigTable(attribute);
 		for(String t : fkTablesList){
 			DefaultMutableTreeNode fkNode = new DefaultMutableTreeNode(t);

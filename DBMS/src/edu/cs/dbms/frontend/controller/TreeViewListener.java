@@ -2,6 +2,7 @@ package edu.cs.dbms.frontend.controller;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -63,13 +64,20 @@ public class TreeViewListener implements MouseListener{
 			//az adott melysegig az elemek neve, beleertve a az aktualisat is
 			TreePath selPath = treeView.getPathForLocation(e.getX(), e.getY());
 			//megkapjuk az aktualis melyseget, ebbol tudjuk h mire katintott (1-tol indul)
-	        Object[] array = selPath.getPath();
-	        int depth = array.length;
+			Object[] array = null;
+			try{
+	        	array = selPath.getPath();
+	        }catch(NullPointerException exp){
+	        	return;
+	        }
+			int depth = array.length;
 	        Table table;
 	        Attribute attribute;
 	        DefaultMutableTreeNode node;
 	        IndexFile indexFile;
 	        AttributeService attributeService = new AttributeService();
+	        
+	        removePanels();
 	        popupMenu = new TreePopup(frame, treeViewPanel);
 	        
 			if(selPath != null){
@@ -176,4 +184,13 @@ public class TreeViewListener implements MouseListener{
 		
 	}
 
+	private void removePanels(){
+		if(popupMenu!= null){
+        	List<PopupMenuListener> list = popupMenu.getListenerList();
+        	for(PopupMenuListener listener : list){
+				listener.setVisiblePanel();
+			}
+        }
+	}
+	
 }

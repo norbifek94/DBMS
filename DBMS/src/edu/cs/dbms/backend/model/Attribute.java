@@ -9,10 +9,11 @@ public class Attribute {
 	private String isNull;
 	private boolean primary;
 	private boolean unique;
+	private boolean forignKey;
 	
 	public Attribute(String databaseName, String tableName, String attrName, 
 			String type, String length, String isNull,
-			boolean primary, boolean unique){
+			boolean primary, boolean unique, boolean foreignKey){
 		
 		this.databaseName = databaseName;
 		this.tableName = tableName;
@@ -22,6 +23,7 @@ public class Attribute {
 		this.isNull = isNull;
 		this.primary = primary;
 		this.unique = unique;
+		this.setForignKey(foreignKey);
 	}
 	
 	public void setDatabaseName(String databaseName) {
@@ -88,6 +90,14 @@ public class Attribute {
 		return unique;
 	}
 	
+	public boolean isForignKey() {
+		return forignKey;
+	}
+
+	public void setForignKey(boolean forignKey) {
+		this.forignKey = forignKey;
+	}
+
 	public static class AttributeBuilder{
 		private String databaseName;
 		private String tableName;
@@ -97,6 +107,7 @@ public class Attribute {
 		private String isNull;
 		private boolean primary;
 		private boolean unique;
+		private boolean foreignKey;
 		
 		public AttributeBuilder(){}
 		
@@ -140,8 +151,13 @@ public class Attribute {
 			return this;
 		}		
 		
+		public AttributeBuilder setForeign(boolean foreignKey){
+			this.foreignKey = foreignKey;
+			return this;
+		}
+		
 		public Attribute creatAttr(){
-			return new Attribute(databaseName, tableName, attrName, type, length, isNull, primary, unique);
+			return new Attribute(databaseName, tableName, attrName, type, length, isNull, primary, unique, foreignKey);
 		}
 	}
 }

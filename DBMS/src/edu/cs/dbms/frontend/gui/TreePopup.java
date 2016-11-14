@@ -1,5 +1,8 @@
 package edu.cs.dbms.frontend.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -22,20 +25,26 @@ public class TreePopup extends JPopupMenu{
 	private Attribute attribute;
 	private IndexFile indexFile;
 	private DefaultMutableTreeNode foreignNode;
+	private List<PopupMenuListener> itemListenerList;
 	
 	public TreePopup(DbmsFrame dbmsFrame, TreeViewPanel treeViewPanel){
 		this.dbmsFrame = dbmsFrame;
 		this.treeViewPanel = treeViewPanel;
+		itemListenerList = new ArrayList<PopupMenuListener>();
 	}
 	
 	public void addNewMenuItem(String name){
 		JMenuItem item = new JMenuItem(name);
 		this.add(item);
 		this.add(new JSeparator());
-		
-		item.addMouseListener(new PopupMenuListener(dbmsFrame, treeViewPanel, this, item));
+		PopupMenuListener listener = new PopupMenuListener(dbmsFrame, treeViewPanel, this, item);
+		itemListenerList.add(listener);
+		item.addMouseListener(listener);
 	}
 	
+	public List<PopupMenuListener> getListenerList(){
+		return itemListenerList;
+	}
 	public void setDatabaseName(String databaseName){
 		this.databaseName = databaseName;
 	}

@@ -3,22 +3,48 @@
   <Database databaseName="test">
     <Table tableName="table" fileName="table.bin">
       <Structure>
-        <Attribute attributeName="das" type="char" length="1" isNull="0" />
+        <Attribute attributeName="id" type="char" length="10" isNull="1" />
+        <Attribute attributeName="name" type="char" length="8" isNull="1" />
       </Structure>
       <primaryKey>
-        <pkAttribute>das</pkAttribute>
+        <pkAttribute>id</pkAttribute>
       </primaryKey>
-      <uniqueKey />
+      <uniqueKey>
+        <UniqueAttribute>id</UniqueAttribute>
+      </uniqueKey>
       <foreignKeys />
       <IndexFiles />
     </Table>
     <Table tableName="table2" fileName="table2.bin">
-      <Structure />
+      <Structure>
+        <Attribute attributeName="id" type="int" length="7" isNull="1" />
+      </Structure>
+      <primaryKey>
+        <pkAttribute>id</pkAttribute>
+      </primaryKey>
+      <uniqueKey />
+      <foreignKeys>
+        <foreignKey>
+          <references>
+            <refTable>table</refTable>
+            <refAttribute>id</refAttribute>
+          </references>
+          <fkAttribute>id</fkAttribute>
+        </foreignKey>
+      </foreignKeys>
+      <IndexFiles />
+    </Table>
+  </Database>
+  <Database databaseName="test2" />
+  <Database databaseName="test3">
+    <Table tableName="as" fileName="as.bin">
+      <Structure>
+        <Attribute attributeName="dsada" type="char" length="1" isNull="0" />
+      </Structure>
       <primaryKey />
       <uniqueKey />
       <foreignKeys />
       <IndexFiles />
     </Table>
   </Database>
-  <Database databaseName="test2" />
 </Databases>
