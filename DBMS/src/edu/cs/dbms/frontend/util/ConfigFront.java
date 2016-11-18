@@ -12,7 +12,7 @@ public class ConfigFront {
 	public static final String NEW_DATABASE = "New database";
 	public static final String NEW_TABLE = "New table";
 	public static final String NEW_ATTRIBUTE = "New attribute";
-	public static final String NEW_ENTRY = "New entry";
+	public static final String NEW_ENTRY = "Magic";
 	public static final String NEW_INDEX_FILE = "Creat index file";
 	public static final String NEW_FOREIGN = "New foreign key";
 	

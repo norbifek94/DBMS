@@ -13,5 +13,30 @@
       <foreignKeys />
       <IndexFiles />
     </Table>
+    <Table tableName="tablenew" fileName="tablenew.bin">
+      <Structure>
+        <Attribute attributeName="id" type="int" length="1" isNull="0" />
+        <Attribute attributeName="name" type="char" length="5" isNull="0" />
+        <Attribute attributeName="email" type="char" length="5" isNull="0" />
+      </Structure>
+      <primaryKey>
+        <pkAttribute>id</pkAttribute>
+      </primaryKey>
+      <uniqueKey />
+      <foreignKeys />
+      <IndexFiles />
+    </Table>
+  </Database>
+  <Database databaseName="ujdb">
+    <Table tableName="ujtabla" fileName="ujtabla.bin">
+      <Structure>
+        <Attribute attributeName="id" type="int" length="1" isNull="0" />
+        <Attribute attributeName="name" type="char" length="1" isNull="0" />
+      </Structure>
+      <primaryKey />
+      <uniqueKey />
+      <foreignKeys />
+      <IndexFiles />
+    </Table>
   </Database>
 </Databases>
