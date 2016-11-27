@@ -43,7 +43,11 @@ public class AttributeListener implements ActionListener{
 					attr.setType(attributePanel.getType());
 					attr.setLength(attributePanel.getLength());
 					attr.setPrimary(attributePanel.isPrimaryKey());
-					attr.setUnique(attributePanel.isUniqueKey());
+					if(attributePanel.isPrimaryKey()){
+						attr.setUnique(false);
+					}else{
+						attr.setUnique(attributePanel.isUniqueKey());
+					}
 					attr.setIsNull(attributePanel.isNull()? "1" : "0");
 					
 					attributeService.createAttribute(attr);

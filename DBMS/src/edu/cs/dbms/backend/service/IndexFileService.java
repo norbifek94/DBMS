@@ -51,6 +51,7 @@ public class IndexFileService extends XMLFileService{
 			}
 		}
 	}
+	
 	public void addToIndexFile(String attrName, IndexFile indexFile){
 		
 		Document doc = getDocument();
@@ -85,6 +86,7 @@ public class IndexFileService extends XMLFileService{
 			}
 		}
 	}
+	
 	public boolean searchIndexFile(Element indexFiles, IndexFile indexFile) {
 		List<Element> index = indexFiles.getChildren();
 		for(Element i : index){

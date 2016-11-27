@@ -2,7 +2,6 @@ package edu.cs.dbms.frontend.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -42,7 +41,7 @@ public class IndexAttributeListener implements ActionListener{
 				Attribute attribute = treePopup.getAttribute();
 				indexService.addToIndexFile(attribute.getAttrName(), file);
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePopup.getNode().getParent();
-				treeViewPanel.loadTableContent(node);
+				treeViewPanel.loadTableContent(node);				
 			}catch(DatabaseException exp){
 				JOptionPane.showMessageDialog(attributePanel, exp);
 			}finally{

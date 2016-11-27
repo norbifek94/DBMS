@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Databases>
+  <Database databaseName="db">
+    <Table tableName="tb" fileName="tb.bin">
+      <Structure>
+        <Attribute attributeName="id" type="char" length="1" isNull="0" />
+      </Structure>
+      <primaryKey>
+        <pkAttribute>id</pkAttribute>
+      </primaryKey>
+      <uniqueKey />
+      <foreignKeys />
+      <IndexFiles />
+    </Table>
+    <Table tableName="tb2" fileName="tb2.bin">
+      <Structure>
+        <Attribute attributeName="id" type="char" length="1" isNull="0" />
+        <Attribute attributeName="proba" type="char" length="1" isNull="0" />
+      </Structure>
+      <primaryKey>
+        <pkAttribute>id</pkAttribute>
+      </primaryKey>
+      <uniqueKey />
+      <foreignKeys>
+        <foreignKey>
+          <references>
+            <refTable>tb</refTable>
+            <refAttribute>id</refAttribute>
+          </references>
+          <fkAttribute>id</fkAttribute>
+        </foreignKey>
+      </foreignKeys>
+      <IndexFiles>
+        <IndexFile indexName="proba" keyLeght="1" isUnique="0" indexType="BTree">
+          <IndexAttributes>
+            <IAttribute>proba</IAttribute>
+          </IndexAttributes>
+        </IndexFile>
+      </IndexFiles>
+    </Table>
+  </Database>
+</Databases>

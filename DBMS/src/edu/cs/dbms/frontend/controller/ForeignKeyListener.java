@@ -2,14 +2,18 @@ package edu.cs.dbms.frontend.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import edu.cs.dbms.backend.key_value.KeyValueStoring;
 import edu.cs.dbms.backend.model.Attribute;
 import edu.cs.dbms.backend.service.DatabaseException;
 import edu.cs.dbms.backend.service.ForeignKeyService;
 import edu.cs.dbms.backend.service.TableService;
+import edu.cs.dbms.backend.util.Config;
 import edu.cs.dbms.frontend.gui.ForeignKeyPanel;
 import edu.cs.dbms.frontend.gui.TreePopup;
 import edu.cs.dbms.frontend.gui.TreeViewPanel;
@@ -55,7 +59,20 @@ public class ForeignKeyListener implements ActionListener{
 			}
 		}
 		if(e.getActionCommand().equals(ConfigFront.NEW_FOREIGN)){
+			//letrehozom filet a megfelelo path-el es feltoltom a 
+			//key-kel amelyek a referencia tablaba primary key-ek
 			try{				
+				KeyValueStoring kvs = new KeyValueStoring();
+				kvs.setPath(Config.KEY_VALUE_PATH_PK + 
+						attribute.getDatabaseName(), attribute.getTableName());
+				Map<String, List<String>> map = kvs.getAll();
+				
+				for(Map.Entry<String, List<String>> entry : map.entrySet()) {
+					kvs.setPath(Config.KEY_VALUE_PATH_FK + 
+							attribute.getDatabaseName() + "_" + 
+							foreignKeyPanel.getTableName(), attribute.getTableName());
+					kvs.insert(entry.getKey(), "");
+				}
 				
 				foreignKeyService.addNewForeignKey(attribute, foreignKeyPanel.getTableName());
 				treeViewPanel.loadTableContent(brotherNode);
@@ -64,17 +81,18 @@ public class ForeignKeyListener implements ActionListener{
 			}finally{
 				foreignKeyPanel.setVisible(false);
 			}
-		}else if(e.getActionCommand().equals(ConfigFront.ADD_TO_FOREIGN_KEY)){
-			
-			try{				
-				foreignKeyService.addToForeignKey(attribute, foreignKeyPanel.getTableName());
-				treeViewPanel.loadTableContent(brotherNode);
-			}catch(DatabaseException exp){
-				JOptionPane.showMessageDialog(foreignKeyPanel, exp);
-			}finally{
-				foreignKeyPanel.setVisible(false);
-			}
 		}
+//		}else if(e.getActionCommand().equals(ConfigFront.ADD_TO_FOREIGN_KEY)){
+//			
+//			try{				
+//				foreignKeyService.addToForeignKey(attribute, foreignKeyPanel.getTableName());
+//				treeViewPanel.loadTableContent(brotherNode);
+//			}catch(DatabaseException exp){
+//				JOptionPane.showMessageDialog(foreignKeyPanel, exp);
+//			}finally{
+//				foreignKeyPanel.setVisible(false);
+//			}
+//		}
 		
 	}
 

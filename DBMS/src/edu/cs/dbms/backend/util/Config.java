@@ -2,8 +2,17 @@ package edu.cs.dbms.backend.util;
 
 public class Config {
 
+	public static final String KEY_VALUE_PATH_PK = "src/edu/cs/dbms/backend/res/primary/";
+	public static final String KEY_VALUE_PATH_UQ = "src/edu/cs/dbms/backend/res/unique/";
+	public static final String KEY_VALUE_PATH_FK = "src/edu/cs/dbms/backend/res/foreign/";
+	public static final String KEY_VALUE_PATH_IF = "src/edu/cs/dbms/backend/res/index/";
+//	public static final String KEY_VALUE_TYPE_PK = "/primary/";
+//	public static final String KEY_VALUE_TYPE_UQ = "/unique/";
+//	public static final String KEY_VALUE_TYPE_FK = "/foreign/";
+	
 	//XML file
-	public static final String XML_NAME = "src/edu/cs/dbms/backend/res/database.xml";
+	public static final String XML_PATH = "src/edu/cs/dbms/backend/res/xml/";
+	public static final String XML_NAME = "src/edu/cs/dbms/backend/res/xml/database.xml";
 	public static final String XML_PARENT_TAG = "Databases";
 	
 	//Database
@@ -25,7 +34,7 @@ public class Config {
 	public static final String INDEX_FILE_KEY_LEGTH = "keyLeght";
 	public static final String INDEX_FILE_IS_UNIQUE = "isUnique";
 	public static final String INDEX_FILE_TYPE = "indexType";
-	public static final String INDEX_FILE_EXTENSION = ".ind";
+	public static final String INDEX_FILE_EXTENSION = "";
 	
 	//Attribute
 	public static final String ATTRIBUTE_TAG = "Attribute";
@@ -52,5 +61,7 @@ public class Config {
 	public static final String FOREIGN_KEY_REFERENCES_TAG = "references";
 	public static final String FOREIGN_KEY_REF_TABLE_TAG = "refTable";
 	public static final String FOREIGN_KEY_REF_ATTRIBUTE_TAG = "refAttribute";
+	
+	
 	
 }

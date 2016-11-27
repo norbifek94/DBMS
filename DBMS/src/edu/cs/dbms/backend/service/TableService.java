@@ -6,6 +6,7 @@ import java.util.List;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import edu.cs.dbms.backend.model.Attribute;
 import edu.cs.dbms.backend.model.Table;
 import edu.cs.dbms.backend.util.Config;
 
@@ -97,4 +98,24 @@ public class TableService extends XMLFileService{
 		}
 		return tableNames;
 	}
+	
+	public List<Attribute> getForeignKeys(Table table){
+		List<Attribute> keys = new ArrayList<Attribute>();
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(table.getDatabaseName())){
+				List<Element> listTable = e.getChildren();
+				for(Element t: listTable){
+					if(t.getAttributeValue(Config.TABLE_ID).equals(table.getTableName())){
+						//TODO get the foreign keys for this table
+					}
+				}
+			}
+		}
+		return keys;
+	}
+	
 }

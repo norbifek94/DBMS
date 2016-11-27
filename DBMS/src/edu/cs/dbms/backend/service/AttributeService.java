@@ -11,8 +11,7 @@ import edu.cs.dbms.backend.model.IndexFile;
 import edu.cs.dbms.backend.util.Config;
 
 public class AttributeService extends XMLFileService{
-	private boolean isPK;
-	
+
 	//attributum letehozasa
 	public void createAttribute(Attribute attribute) throws DatabaseException{
 		
@@ -106,7 +105,6 @@ public class AttributeService extends XMLFileService{
 		Document doc = getDocument();
 		Element root = doc.getRootElement();
 		List<Element> listDatabase = root.getChildren();
-		isPK = false;
 		
 		for(Element e : listDatabase){
 			
@@ -124,20 +122,20 @@ public class AttributeService extends XMLFileService{
 								break;
 							}
 						}
-						Element pk = t.getChild(Config.PRIMARY_KEY_TAG);
+//						Element pk = t.getChild(Config.PRIMARY_KEY_TAG);
 						Element uk = t.getChild(Config.UNIQUE_KEY_TAG);
-						List<Element> pkList = pk.getChildren();
+//						List<Element> pkList = pk.getChildren();
 						List<Element> ukList = uk.getChildren();
 						
 							
 					
-						for(Element p : pkList){
-							if(p.getValue().equals(attribute.getAttrName())){
-								pkList.remove(p);
-								isPK = true;
-								break;
-							}
-						}
+//						for(Element p : pkList){
+//							if(p.getValue().equals(attribute.getAttrName())){
+//								pkList.remove(p);
+//								isPK = true;
+//								break;
+//							}
+//						}
 						for(Element u : ukList){
 							if(u.getValue().equals(attribute.getAttrName())){
 								ukList.remove(u);
@@ -158,12 +156,12 @@ public class AttributeService extends XMLFileService{
 				.createIndexFile();
 		IndexFileService fileService = new IndexFileService();
 		fileService.deleteIndex(indexFile);
-		if(isPK){
-			ForeignKeyService foreignKeyService = new ForeignKeyService();
-			foreignKeyService.deleteAllForignKeyAttr(attribute);
-		}
+//		if(isPK){
+//			ForeignKeyService foreignKeyService = new ForeignKeyService();
+//			foreignKeyService.deleteAllForignKeyAttr(attribute);
+//		}
 	}
-	
+
 	public boolean isPrimaryKey(Attribute attribute){
 		Document doc = getDocument();
 		Element root = doc.getRootElement();
@@ -204,27 +202,60 @@ public class AttributeService extends XMLFileService{
 		List<Element> listDatabase = root.getChildren();
 		
 		for(Element e : listDatabase){
-			List<Element> listTable = e.getChildren();
-			for(Element t : listTable){
-				Element fk = t.getChild(Config.FOREIGN_KEYS_TAG);
-				List<Element> fkList = fk.getChildren();
-				for(Element f : fkList){
-					Element ref = f.getChild(Config.FOREIGN_KEY_REFERENCES_TAG);
-					Element refTable = ref.getChild(Config.FOREIGN_KEY_REF_TABLE_TAG);
-					if(refTable.getText().equals(attribute.getTableName())){
-						List<Element> refAttList = ref.getChildren(Config.FOREIGN_KEY_REF_ATTRIBUTE_TAG);
-						for(Element refAtt : refAttList){
-							if(refAtt.getText().equals(attribute.getAttrName())){
-								return true;
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(attribute.getDatabaseName())){
+				List<Element> listTable = e.getChildren();
+				for(Element t : listTable){
+					Element fk = t.getChild(Config.FOREIGN_KEYS_TAG);
+					List<Element> fkList = fk.getChildren();
+					for(Element f : fkList){
+						Element ref = f.getChild(Config.FOREIGN_KEY_REFERENCES_TAG);
+						Element refTable = ref.getChild(Config.FOREIGN_KEY_REF_TABLE_TAG);
+						if(refTable.getText().equals(attribute.getTableName())){
+							List<Element> refAttList = ref.getChildren(Config.FOREIGN_KEY_REF_ATTRIBUTE_TAG);
+							for(Element refAtt : refAttList){
+								if(refAtt.getText().equals(attribute.getAttrName())){
+									return true;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-		
 		return false;
+	}
+	
+	public String getForeignKeyLocation(Attribute attribute){
+		if(!isPrimaryKey(attribute)){
+			return "";
+		}
 		
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(attribute.getDatabaseName())){
+				List<Element> listTable = e.getChildren();
+				for(Element t : listTable){
+					Element fk = t.getChild(Config.FOREIGN_KEYS_TAG);
+					List<Element> fkList = fk.getChildren();
+					for(Element f : fkList){
+						Element ref = f.getChild(Config.FOREIGN_KEY_REFERENCES_TAG);
+						Element refTable = ref.getChild(Config.FOREIGN_KEY_REF_TABLE_TAG);
+						if(refTable.getText().equals(attribute.getTableName())){
+							List<Element> refAttList = ref.getChildren(Config.FOREIGN_KEY_REF_ATTRIBUTE_TAG);
+							for(Element refAtt : refAttList){
+								if(refAtt.getText().equals(attribute.getAttrName())){
+									return t.getAttributeValue(Config.TABLE_ID);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return "";
 	}
 	
 	public boolean isUnique(Attribute attribute){
@@ -241,11 +272,11 @@ public class AttributeService extends XMLFileService{
 					
 					if(t.getAttributeValue(Config.TABLE_ID).equals(attribute.getTableName())){
 						
-						Element pk = t.getChild(Config.UNIQUE_KEY_TAG);	
-						List<Element> pkList = pk.getChildren();
+						Element uq = t.getChild(Config.UNIQUE_KEY_TAG);	
+						List<Element> uqList = uq.getChildren();
 						
-						for(Element p : pkList){
-							if(p.getValue().equals(attribute.getAttrName())){
+						for(Element u : uqList){
+							if(u.getValue().equals(attribute.getAttrName())){
 								return true;
 							}
 						}
@@ -255,10 +286,6 @@ public class AttributeService extends XMLFileService{
 			}
 		}
 		return false;
-	}
-	
-	public boolean isPk(){
-		return isPK;
 	}
 	
 	public List<Attribute> getAttribute(Attribute attribute){

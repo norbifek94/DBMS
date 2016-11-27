@@ -10,6 +10,7 @@ import com.sleepycat.je.DatabaseEntry;
 
 public class Entry {
 	private int id;
+	
 	public int getId() {
 		return id;
 	}

@@ -7,6 +7,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import edu.cs.dbms.backend.model.Attribute;
+import edu.cs.dbms.backend.model.ForeignKey;
 import edu.cs.dbms.backend.model.Table;
 import edu.cs.dbms.backend.util.Config;
 
@@ -269,5 +270,41 @@ public class ForeignKeyService extends XMLFileService{
 				fkAttr.remove(f);
 			}
 		}
+	}
+
+	public List<ForeignKey> getForeigKeys(Table table){
+		List<ForeignKey> list = new ArrayList<ForeignKey>();
+		Document doc = getDocument();
+		Element root = doc.getRootElement();
+		List<Element> listDatabase = root.getChildren();
+		
+		for(Element e : listDatabase){
+			
+			if(e.getAttributeValue(Config.DATABASE_ID).equals(table.getDatabaseName())){
+				
+				List<Element> listTable = e.getChildren();
+				for(Element t : listTable){
+					if(t.getAttributeValue(Config.TABLE_ID).equals(table.getTableName())){
+						Element foreignKeys = t.getChild(Config.FOREIGN_KEYS_TAG);
+						List<Element> keys = foreignKeys.getChildren();
+						for(Element k : keys){
+							Element ref = k.getChild(Config.FOREIGN_KEY_REFERENCES_TAG);
+							Attribute attr = new Attribute.AttributeBuilder()
+														  .setDatabaseName(table.getDatabaseName())
+														  .setTableName(ref.getChildText(Config.FOREIGN_KEY_REF_TABLE_TAG))
+														  .setAttrName(ref.getChildText(Config.FOREIGN_KEY_REF_ATTRIBUTE_TAG))
+														  .creatAttr();
+							ForeignKey fk = new ForeignKey.ForeignKeyBuilder()
+														  .setDatabaseName(table.getDatabaseName())
+														  .setTableName(table.getTableName())
+														  .setReferens(attr)
+														  .createForeignKey();
+							list.add(fk);
+						}
+					}
+				}
+			}
+		}
+		return list;
 	}
 }

@@ -52,7 +52,7 @@ public class ConfigFront {
 	
 	//new Entry
 	public static final String SAVE_NEW_ENTRY = "Save";
-	public static final String CANCEL_SAVE = "Cancel";
+	public static final String UPDATE_ENTRY = "Update";
 
 	//Frame panel size
 	public static final int FRAME_WIDTH = 900;

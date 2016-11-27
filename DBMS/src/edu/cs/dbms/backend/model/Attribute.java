@@ -1,5 +1,7 @@
 package edu.cs.dbms.backend.model;
 
+import java.util.List;
+
 public class Attribute {
 	private String databaseName;
 	private String tableName;
@@ -7,13 +9,14 @@ public class Attribute {
 	private String type;
 	private String length;
 	private String isNull;
-	private boolean primary;
-	private boolean unique;
-	private boolean forignKey;
+	private boolean primary = false;
+	private boolean unique = false;
+	private boolean foreignKey = false;
+	private List<Attribute> foreignKeys;
 	
 	public Attribute(String databaseName, String tableName, String attrName, 
 			String type, String length, String isNull,
-			boolean primary, boolean unique, boolean foreignKey){
+			boolean primary, boolean unique, boolean foreignKey, List<Attribute> foreignKeys){
 		
 		this.databaseName = databaseName;
 		this.tableName = tableName;
@@ -23,7 +26,8 @@ public class Attribute {
 		this.isNull = isNull;
 		this.primary = primary;
 		this.unique = unique;
-		this.setForignKey(foreignKey);
+		this.foreignKey = foreignKey;
+		this.setForeignKeys(foreignKeys);
 	}
 	
 	public void setDatabaseName(String databaseName) {
@@ -91,11 +95,19 @@ public class Attribute {
 	}
 	
 	public boolean isForignKey() {
-		return forignKey;
+		return foreignKey;
 	}
 
-	public void setForignKey(boolean forignKey) {
-		this.forignKey = forignKey;
+	public void setForeignKey(boolean foreignKey) {
+		this.foreignKey = foreignKey;
+	}
+
+	public List<Attribute> getForeignKeys() {
+		return foreignKeys;
+	}
+
+	public void setForeignKeys(List<Attribute> foreignKeys) {
+		this.foreignKeys = foreignKeys;
 	}
 
 	public static class AttributeBuilder{
@@ -108,6 +120,7 @@ public class Attribute {
 		private boolean primary;
 		private boolean unique;
 		private boolean foreignKey;
+		private List<Attribute> foreignKeys;
 		
 		public AttributeBuilder(){}
 		
@@ -156,8 +169,13 @@ public class Attribute {
 			return this;
 		}
 		
+		public AttributeBuilder setForeignKeys(List<Attribute> foreignKeys){
+			this.foreignKeys = foreignKeys;
+			return this;
+		}
+		
 		public Attribute creatAttr(){
-			return new Attribute(databaseName, tableName, attrName, type, length, isNull, primary, unique, foreignKey);
+			return new Attribute(databaseName, tableName, attrName, type, length, isNull, primary, unique, foreignKey, foreignKeys);
 		}
 	}
 }
