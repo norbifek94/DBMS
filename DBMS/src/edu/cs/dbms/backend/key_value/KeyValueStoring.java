@@ -17,7 +17,10 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
+import edu.cs.dbms.backend.model.Attribute;
+import edu.cs.dbms.backend.service.AttributeService;
 import edu.cs.dbms.backend.service.DatabaseException;
+import edu.cs.dbms.backend.util.Config;
 
 public class KeyValueStoring {
 
@@ -656,6 +659,112 @@ public class KeyValueStoring {
 		}		
 	}
 
+	public Map<String, List<String>> select(List<String> attrList, List<List<String>> condition)throws DatabaseException{
+		Cursor cursor = null;
+		Map<String, List<String>> keyValue = null;
+
+		try {
+			cursor = testDB.openCursor(null, null);
+			DatabaseEntry foundKey = new DatabaseEntry();
+			DatabaseEntry foundData = new DatabaseEntry();
+			keyValue = new HashMap<String, List<String>>();
+			
+			while (cursor.getNext(foundKey, foundData, LockMode.DEFAULT) ==
+					OperationStatus.SUCCESS) {
+				String key = new String(foundKey.getData());
+				String data = new String(foundData.getData());
+				String separator = data.charAt(data.length()-1) + "";
+				String keyString = key.replace(separator, "");
+				String dataString = data.replace(separator, "").replace("[", "").replace("]", "");
+				List<String> dataList = new ArrayList<String>(Arrays.asList(dataString.split(", ")));
+				boolean ok = true;
+				for(int i = 0; i < condition.size(); i++){
+					List<String> c = condition.get(i);
+					int index = attrList.indexOf(c.get(0));
+					if(index == 0){
+						int num;
+						int num2;
+						switch(c.get(1)){
+							case "==":
+								if(!keyString.equals(c.get(2))){
+									ok = false;
+								}
+							break;
+							case ">=":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(keyString);
+								if(num2 < num){
+									ok = false;
+								}
+							break;
+							case "<=":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(keyString);
+								if(num2 > num){
+									ok = false;
+								}
+							break;
+							case "!=":
+								if(keyString.equals(c.get(2))){
+									ok = false;
+								}
+							break;
+						}
+					}else if(dataList.size() >= index){
+						int num;
+						int num2;
+						switch(c.get(1)){
+							case "==":
+								if(!dataList.get(index-1).equals(c.get(2))){
+									ok = false;
+								}
+							break;
+							case ">=":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(dataList.get(index-1));
+								if(num2 < num){
+									ok = false;
+								}
+							break;
+							case "<=":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(dataList.get(index-1));
+								if(num2 > num){
+									ok = false;
+								}
+							break;
+							case "!=":
+								if(dataList.get(index-1).equals(c.get(2))){
+									ok = false;
+								}
+							break;
+						}
+					}else{
+						ok = false;
+					}
+				}
+				if(ok){
+					keyValue.put(keyString, dataList);
+				}
+			}
+			
+		} catch (com.sleepycat.je.DatabaseException de) {
+			System.err.println("Error accessing database." + de);
+			throw new DatabaseException("Error accessing database, try again later!");
+		} finally {
+			try {
+				cursor.close();
+				testDB.close();
+				dbEnv.close();
+			} catch (com.sleepycat.je.DatabaseException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return keyValue;
+	}
+
+	
 	//szukseges ha egy uj attributumnak index file-t hozunk letre 
 	//akkor letrehozzuk a mapat neki uress file-val
 	//mert a kesobiekben igy tudjuk meg az exist file metodussal,

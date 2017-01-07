@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -22,6 +23,7 @@ import edu.cs.dbms.backend.service.ForeignKeyService;
 import edu.cs.dbms.backend.util.Config;
 import edu.cs.dbms.frontend.gui.DbmsFrame;
 import edu.cs.dbms.frontend.gui.KeyValueTablePanel;
+import edu.cs.dbms.frontend.gui.SelectTablePanel;
 import edu.cs.dbms.frontend.gui.TreePopup;
 import edu.cs.dbms.frontend.gui.TreeViewPanel;
 import edu.cs.dbms.frontend.util.ConfigFront;
@@ -32,7 +34,7 @@ public class TreeViewListener extends MouseAdapter{
 	private JTree treeView;
 	private TreePopup popupMenu;
 	private DbmsFrame frame;
-	private KeyValueTablePanel panel;
+	private JPanel panel;
 	public TreeViewListener(TreeViewPanel treeViewPanel, JTree treeView, DbmsFrame frame){
 		
 		this.treeViewPanel = treeViewPanel;
@@ -54,26 +56,30 @@ public class TreeViewListener extends MouseAdapter{
 			if(panel != null){
 				panel.setVisible(false);
 			}
-			switch(array[depth - 1].toString()){
+			if(array[depth - 1].toString().equals(ConfigFront.NODE_COLUMNS)){
 				//lekerem a tabla osszes attributumat es kulso kulcsat
-				case ConfigFront.NODE_COLUMNS:
-					String db = array[depth - 4].toString();
-					String table = array[depth - 2].toString();
-					Attribute attr = new Attribute.AttributeBuilder()
-												.setDatabaseName(db)
-												.setTableName(table)
-												.creatAttr();
-					Table tb = new Table(db, table, "");
-					AttributeService attrService = new AttributeService();
-					ForeignKeyService fkService = new ForeignKeyService();
-					List<Attribute> listAttr = attrService.getAttribute(attr);
-					List<ForeignKey> listFk = fkService.getForeigKeys(tb);
-					panel = new KeyValueTablePanel(listAttr, listFk);
-					
-					frame.add(panel, BorderLayout.CENTER);
-					frame.pack();
-					break;
+				String db = array[depth - 4].toString();
+				String table = array[depth - 2].toString();
+				Attribute attr = new Attribute.AttributeBuilder()
+											.setDatabaseName(db)
+											.setTableName(table)
+											.creatAttr();
+				Table tb = new Table(db, table, "");
+				AttributeService attrService = new AttributeService();
+				ForeignKeyService fkService = new ForeignKeyService();
+				List<Attribute> listAttr = attrService.getAttribute(attr);
+				List<ForeignKey> listFk = fkService.getForeigKeys(tb);
+				panel = new KeyValueTablePanel(listAttr, listFk);
+				
+				frame.add(panel, BorderLayout.CENTER);
+				frame.pack();
+			}else if(depth == 2){
+				panel = new SelectTablePanel(array[depth - 1].toString());
+				frame.add(panel, BorderLayout.CENTER);
+				frame.pack();
 			}
+			
+			
 			
 		}
 	}

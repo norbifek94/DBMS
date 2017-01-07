@@ -16,6 +16,7 @@
       <Structure>
         <Attribute attributeName="id" type="char" length="1" isNull="0" />
         <Attribute attributeName="proba" type="char" length="1" isNull="0" />
+        <Attribute attributeName="ttt" type="char" length="1" isNull="0" />
       </Structure>
       <primaryKey>
         <pkAttribute>id</pkAttribute>
@@ -39,4 +40,5 @@
       </IndexFiles>
     </Table>
   </Database>
+  <Database databaseName="valami" />
 </Databases>
