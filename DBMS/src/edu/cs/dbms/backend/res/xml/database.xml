@@ -4,41 +4,24 @@
     <Table tableName="tb" fileName="tb.bin">
       <Structure>
         <Attribute attributeName="id" type="char" length="1" isNull="0" />
+        <Attribute attributeName="uq" type="char" length="1" isNull="0" />
+        <Attribute attributeName="if" type="char" length="1" isNull="0" />
+        <Attribute attributeName="simple" type="char" length="1" isNull="0" />
       </Structure>
       <primaryKey>
         <pkAttribute>id</pkAttribute>
       </primaryKey>
-      <uniqueKey />
+      <uniqueKey>
+        <UniqueAttribute>uq</UniqueAttribute>
+      </uniqueKey>
       <foreignKeys />
-      <IndexFiles />
-    </Table>
-    <Table tableName="tb2" fileName="tb2.bin">
-      <Structure>
-        <Attribute attributeName="id" type="char" length="1" isNull="0" />
-        <Attribute attributeName="proba" type="char" length="1" isNull="0" />
-        <Attribute attributeName="ttt" type="char" length="1" isNull="0" />
-      </Structure>
-      <primaryKey>
-        <pkAttribute>id</pkAttribute>
-      </primaryKey>
-      <uniqueKey />
-      <foreignKeys>
-        <foreignKey>
-          <references>
-            <refTable>tb</refTable>
-            <refAttribute>id</refAttribute>
-          </references>
-          <fkAttribute>id</fkAttribute>
-        </foreignKey>
-      </foreignKeys>
       <IndexFiles>
-        <IndexFile indexName="proba" keyLeght="1" isUnique="0" indexType="BTree">
+        <IndexFile indexName="if" keyLeght="1" isUnique="0" indexType="BTree">
           <IndexAttributes>
-            <IAttribute>proba</IAttribute>
+            <IAttribute>if</IAttribute>
           </IndexAttributes>
         </IndexFile>
       </IndexFiles>
     </Table>
   </Database>
-  <Database databaseName="valami" />
 </Databases>

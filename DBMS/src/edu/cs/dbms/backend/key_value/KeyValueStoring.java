@@ -1,8 +1,10 @@
 package edu.cs.dbms.backend.key_value;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -659,7 +661,173 @@ public class KeyValueStoring {
 		}		
 	}
 
-	public Map<String, List<String>> select(List<String> attrList, List<List<String>> condition)throws DatabaseException{
+	public Map<String, List<String>> select(String databaseName, String tableName, 
+			List<String> attrList, List<List<String>> condition)throws DatabaseException{
+		
+		Map<String, List<String>> keyValue = new HashMap<String, List<String>>();
+		AttributeService attrSv = new AttributeService();
+		Attribute attr = new Attribute.AttributeBuilder()
+									  .setDatabaseName(databaseName)
+									  .setTableName(tableName)
+									  .setAttrName("")
+									  .creatAttr();
+		
+		List<String> keys = new ArrayList<String>();
+		
+		//megyek vegig a felteteleken es felhasznalva az index file-kat ellenorzom h igaz
+		for(int i = 0; i < condition.size(); i++){
+			List<String> c = condition.get(i);
+			attr.setAttrName(c.get(0));
+			
+			/*if(attrSv.isPrimaryKey(attr)){
+				System.out.println("Primary: " + c.get(0));
+				List<String> k = searchByKey(c.get(2), c.get(1));
+				
+				if(k.isEmpty()){
+					return keyValue;
+				}
+				
+				if(!keys.isEmpty()){
+					for(String s : k){
+						if(!keys.contains(s)){
+							return keyValue;
+						}
+					}
+				}else{
+					keys.addAll(k);
+				}
+				condition.remove(c);
+			}else*/ if(attrSv.isUnique(attr)){
+				this.setPath(Config.KEY_VALUE_PATH_UQ + databaseName + "/" + tableName, attr.getAttrName());
+				System.out.println("Unique: " + c.get(0));
+				List<String> k = searchByKey(c.get(2), c.get(1));
+				
+				if(k.isEmpty()){
+					return keyValue;
+				}
+				
+				if(!keys.isEmpty()){
+					for(String s : k){
+						if(!keys.contains(s)){
+							return keyValue;
+						}
+					}
+				}else{
+					keys.addAll(k);
+				}
+				condition.remove(c);
+			}else if(KeyValueStoring.fileExists(
+					new File(Config.KEY_VALUE_PATH_IF + 
+							databaseName + "/" + tableName, c.get(0)))){
+				this.setPath(Config.KEY_VALUE_PATH_IF + databaseName + "/" + tableName, attr.getAttrName());
+				System.out.println("IndexFile: " + c.get(0));
+				List<String> k = searchByKey(c.get(2), c.get(1));
+				
+				if(k.isEmpty()){
+					return keyValue;
+				}
+				
+				if(!keys.isEmpty()){
+					for(String s : k){
+						if(!keys.contains(s)){
+							return keyValue;
+						}
+					}
+				}else{
+					keys.addAll(k);
+				}	
+				condition.remove(c);
+			}
+		}
+		
+		if(keys.isEmpty()){
+			this.setPath(Config.KEY_VALUE_PATH_PK + databaseName, tableName);
+			return fullTableScann(attrList, condition);
+		}else{
+			this.setPath(Config.KEY_VALUE_PATH_PK + databaseName, tableName);
+			Collections.sort(keys);
+			return scannAndSelect(attrList, condition, keys);
+		}
+		
+	}
+	
+	public List<String> searchByKey(String searchKey, String condition){
+		
+		Cursor cursor = null;
+		List<String> primaryKeys = new ArrayList<String>();
+		
+		try {
+			
+		    DatabaseEntry theKey = new DatabaseEntry(searchKey.getBytes("UTF-8"));
+		    DatabaseEntry theData = new DatabaseEntry();
+
+		    cursor = testDB.openCursor(null, null);
+		    
+		    OperationStatus retVal = cursor.getSearchKeyRange(theKey, theData, 
+		                                                 LockMode.DEFAULT);
+		    if(condition.equals("==")){
+		    	String keyString = new String(theKey.getData(), "UTF-8");
+	            String dataString = new String(theData.getData(), "UTF-8");
+	            String separator = keyString.charAt(keyString.length()-1) + "";
+				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
+				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
+	            return dataList;
+		    }
+		    
+		    if(condition.contains("=")){
+		    	String keyString = new String(theKey.getData(), "UTF-8");
+	            String dataString = new String(theData.getData(), "UTF-8");
+	            String separator = dataString.charAt(dataString.length()-1) + "";
+				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
+				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
+	            primaryKeys.addAll(dataList);
+	            
+	            if(condition.equals(">=")){
+					retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
+	            }else if(condition.equals("<=")){
+	            	retVal = cursor.getPrev(theKey, theData, LockMode.DEFAULT);
+	            }
+		    }
+	        while (retVal == OperationStatus.SUCCESS) {
+	        	
+	            String keyString = new String(theKey.getData(), "UTF-8");
+	            String dataString = new String(theData.getData(), "UTF-8");
+	            String separator = dataString.charAt(dataString.length()-1) + "";
+				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
+				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
+	            
+				if(condition.equals(">=")){
+					retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
+					primaryKeys.addAll(dataList);
+	            }else if(condition.equals("<=")){
+	            	retVal = cursor.getPrev(theKey, theData, LockMode.DEFAULT);
+	            	primaryKeys.addAll(dataList);
+	            }else if(condition.equals(">")){
+	            	retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
+	            	primaryKeys.addAll(dataList);
+	            }else if(condition.equals("<")){
+	            	retVal = cursor.getPrev(theKey, theData, LockMode.DEFAULT);
+	            	primaryKeys.addAll(dataList);
+	            }
+	        }
+		    
+		} catch (Exception e) {
+			System.out.println("Select by id faild! " + e.getMessage());
+			throw new DatabaseException("Faild, pleas try again later!");
+		} finally {
+		   try {
+				cursor.close();
+				testDB.close();
+				dbEnv.close();
+			} catch (com.sleepycat.je.DatabaseException e) {
+				System.out.println("Select by id close faild! " + e.getMessage());
+				throw new DatabaseException("Faild, pleas try again later!");
+			}
+		}
+		return primaryKeys;
+	}
+	
+	public Map<String, List<String>> fullTableScann(List<String> attrList, List<List<String>> condition)throws DatabaseException{
 		Cursor cursor = null;
 		Map<String, List<String>> keyValue = null;
 
@@ -706,6 +874,20 @@ public class KeyValueStoring {
 							break;
 							case "!=":
 								if(keyString.equals(c.get(2))){
+									ok = false;
+								}
+							break;
+							case ">":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(keyString);
+								if(num2 <= num){
+									ok = false;
+								}
+							break;
+							case "<":
+								num = Integer.parseInt(c.get(2));
+								num2 = Integer.parseInt(keyString);
+								if(num2 >= num){
 									ok = false;
 								}
 							break;
@@ -764,11 +946,138 @@ public class KeyValueStoring {
 		return keyValue;
 	}
 
+	public Map<String, List<String>> scannAndSelect(List<String> attrList, List<List<String>> condition,
+																List<String> keys)throws DatabaseException{
+		Cursor cursor = null;
+		Map<String, List<String>> keyValue = null;
+
+		try {
+			
+			keyValue = new HashMap<String, List<String>>();			
+			DatabaseEntry theKey = new DatabaseEntry(keys.get(0).getBytes("UTF-8"));
+		    DatabaseEntry theData = new DatabaseEntry();
+		    cursor = testDB.openCursor(null, null);
+		    OperationStatus retVal = cursor.getSearchKeyRange(theKey, theData, LockMode.DEFAULT);
+		    int indexKeys = 0;
+		    
+		    while (retVal == OperationStatus.SUCCESS  && indexKeys < keys.size()) {
+	        	
+	            String keyString = new String(theKey.getData(), "UTF-8");
+	            String dataString = new String(theData.getData(), "UTF-8");
+	            String separator = dataString.charAt(dataString.length()-1) + "";
+				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
+				String key = keyString.replace(separator, "");
+				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
+				
+				if(key.equals(keys.get(indexKeys))){
+					boolean ok = true;
+					indexKeys++;
+					
+					for(int i = 0; i < condition.size(); i++){
+						List<String> c = condition.get(i);
+						int index = attrList.indexOf(c.get(0));
+						
+						if(index == 0){
+							int num;
+							int num2;
+							switch(c.get(1)){
+								case "==":
+									if(!key.equals(c.get(2))){
+										ok = false;
+									}
+								break;
+								case ">=":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(key);
+									if(num2 < num){
+										ok = false;
+									}
+								break;
+								case "<=":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(key);
+									if(num2 > num){
+										ok = false;
+									}
+								break;
+								case "!=":
+									if(key.equals(c.get(2))){
+										ok = false;
+									}
+								break;
+								case ">":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(key);
+									if(num2 <= num){
+										ok = false;
+									}
+								break;
+								case "<":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(key);
+									if(num2 >= num){
+										ok = false;
+									}
+								break;
+							}
+							
+						}else if(dataList.size() >= index){
+							int num;
+							int num2;
+							switch(c.get(1)){
+								case "==":
+									if(!dataList.get(index-1).equals(c.get(2))){
+										ok = false;
+									}
+								break;
+								case ">=":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(dataList.get(index-1));
+									if(num2 < num){
+										ok = false;
+									}
+								break;
+								case "<=":
+									num = Integer.parseInt(c.get(2));
+									num2 = Integer.parseInt(dataList.get(index-1));
+									if(num2 > num){
+										ok = false;
+									}
+								break;
+								case "!=":
+									if(dataList.get(index-1).equals(c.get(2))){
+										ok = false;
+									}
+								break;
+							}
+						}else{
+							ok = false;
+						}
+					}
+					if(ok){
+						keyValue.put(key, dataList);
+					}
+					retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
+				}
+			}
+			
+		} catch (com.sleepycat.je.DatabaseException | UnsupportedEncodingException de) {
+			System.err.println("Full table scan select failed." + de.getMessage());
+			throw new DatabaseException("Select failed, try again later!");
+		} finally {
+			try {
+				cursor.close();
+				testDB.close();
+				dbEnv.close();
+			} catch (com.sleepycat.je.DatabaseException e) {
+				System.err.println("Full table scan select failed." + e.getMessage());
+				throw new DatabaseException("Select failed, try again later!");
+			}
+		}
+
+		return keyValue;
+	}
 	
-	//szukseges ha egy uj attributumnak index file-t hozunk letre 
-	//akkor letrehozzuk a mapat neki uress file-val
-	//mert a kesobiekben igy tudjuk meg az exist file metodussal,
-	//h az az attributumnak van index file-ja
 	public void close(){
 		try {
 			testDB.close();

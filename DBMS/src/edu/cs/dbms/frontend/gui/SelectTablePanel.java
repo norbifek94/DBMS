@@ -159,12 +159,12 @@ public class SelectTablePanel extends JPanel {
 					AttributeService attrService = new AttributeService();
 					List<String> listAttr = attrService.getAttributeNames(attr);
 					KeyValueStoring kvs = new KeyValueStoring();
-					kvs.setPath(Config.KEY_VALUE_PATH_PK + databaseName, tableName.get(0));
+					//kvs.setPath(Config.KEY_VALUE_PATH_PK + databaseName, tableName.get(0));
 					
 					if(columnName.size() == 1){
 						 if(columnName.get(0).equals("*")){
 							 try{
-								 setSelectTable(kvs.select(listAttr, condition), listAttr, listAttr);
+								 setSelectTable(kvs.select(databaseName, tableName.get(0), listAttr, condition), listAttr, listAttr);
 							 }catch(DatabaseException ee){
 								 JOptionPane.showMessageDialog(selectPanel,"Something wrong, please try again later!");
 							 }
@@ -184,7 +184,7 @@ public class SelectTablePanel extends JPanel {
 						}
 					}
 					try{
-						 setSelectTable(kvs.select(listAttr, condition), listAttr, columnName);
+						 setSelectTable(kvs.select(databaseName, tableName.get(0), listAttr, condition), listAttr, columnName);
 					 }catch(DatabaseException ee){
 						 JOptionPane.showMessageDialog(selectPanel,"Something wrong, please try again later!");
 					 }
@@ -193,9 +193,6 @@ public class SelectTablePanel extends JPanel {
 					
 				}
 				
-//				System.out.println(columnName);
-//				System.out.println(tableName);
-//				System.out.println(condition);
 				
 			}
 		});
