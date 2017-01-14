@@ -697,7 +697,9 @@ public class KeyValueStoring {
 					keys.addAll(k);
 				}
 				condition.remove(c);
-			}else*/ if(attrSv.isUnique(attr)){
+			}else*/
+			if(attrSv.isUnique(attr)){
+				
 				this.setPath(Config.KEY_VALUE_PATH_UQ + databaseName + "/" + tableName, attr.getAttrName());
 				System.out.println("Unique: " + c.get(0));
 				List<String> k = searchByKey(c.get(2), c.get(1));
@@ -709,13 +711,21 @@ public class KeyValueStoring {
 				if(!keys.isEmpty()){
 					for(String s : k){
 						if(!keys.contains(s)){
-							return keyValue;
+							keys.remove(s);
+						}
+					}
+					for(int j = 0; j < keys.size(); j++){
+						if(!k.contains(keys.get(j))){
+							keys.remove(keys.get(j));
+							j--;
 						}
 					}
 				}else{
 					keys.addAll(k);
 				}
+				System.out.println("KEYS: " + keys + " K: " + k);
 				condition.remove(c);
+				i--;
 			}else if(KeyValueStoring.fileExists(
 					new File(Config.KEY_VALUE_PATH_IF + 
 							databaseName + "/" + tableName, c.get(0)))){
@@ -730,16 +740,24 @@ public class KeyValueStoring {
 				if(!keys.isEmpty()){
 					for(String s : k){
 						if(!keys.contains(s)){
-							return keyValue;
+							keys.remove(s);
+						}
+					}
+					for(int j = 0; j < keys.size(); j++){
+						if(!k.contains(keys.get(j))){
+							keys.remove(keys.get(j));
+							j--;
 						}
 					}
 				}else{
 					keys.addAll(k);
-				}	
+				}
+				System.out.println("KEYS: " + keys + " K: " + k);
 				condition.remove(c);
+				i--;
 			}
 		}
-		
+		//System.out.println(condition + " " + keys);
 		if(keys.isEmpty()){
 			this.setPath(Config.KEY_VALUE_PATH_PK + databaseName, tableName);
 			return fullTableScann(attrList, condition);
@@ -769,9 +787,13 @@ public class KeyValueStoring {
 		    	String keyString = new String(theKey.getData(), "UTF-8");
 	            String dataString = new String(theData.getData(), "UTF-8");
 	            String separator = keyString.charAt(keyString.length()-1) + "";
+	            String key = keyString.replace(separator, "").replace("[", "").replace("]", "");
 				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
 				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
-	            return dataList;
+	            if(key.equals(searchKey)){
+	            	return dataList;
+	            }
+	            return primaryKeys;
 		    }
 		    
 		    if(condition.contains("=")){
@@ -794,20 +816,29 @@ public class KeyValueStoring {
 	            String dataString = new String(theData.getData(), "UTF-8");
 	            String separator = dataString.charAt(dataString.length()-1) + "";
 				String data = dataString.replace(separator, "").replace("[", "").replace("]", "");
+				String key = keyString.replace(separator, "").replace("[", "").replace("]", "");
 				List<String> dataList = new ArrayList<String>(Arrays.asList(data.split(", ")));
 	            
 				if(condition.equals(">=")){
 					retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
 					primaryKeys.addAll(dataList);
+					
 	            }else if(condition.equals("<=")){
 	            	retVal = cursor.getPrev(theKey, theData, LockMode.DEFAULT);
 	            	primaryKeys.addAll(dataList);
+	            	
 	            }else if(condition.equals(">")){
+	            	if(!key.equals(searchKey)){ 
+		            	primaryKeys.addAll(dataList);
+		            	System.out.println(key + " " + searchKey + " |" + primaryKeys);
+	            	}
 	            	retVal = cursor.getNext(theKey, theData, LockMode.DEFAULT);
-	            	primaryKeys.addAll(dataList);
+	            	
 	            }else if(condition.equals("<")){
+	            	if(!key.equals(searchKey)){ 
+		            	primaryKeys.addAll(dataList);
+	            	}
 	            	retVal = cursor.getPrev(theKey, theData, LockMode.DEFAULT);
-	            	primaryKeys.addAll(dataList);
 	            }
 	        }
 		    
@@ -950,7 +981,7 @@ public class KeyValueStoring {
 																List<String> keys)throws DatabaseException{
 		Cursor cursor = null;
 		Map<String, List<String>> keyValue = null;
-
+		System.out.println("----------------------------------------------");
 		try {
 			
 			keyValue = new HashMap<String, List<String>>();			
